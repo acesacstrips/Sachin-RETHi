@@ -1,0 +1,105 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                      MCVT.v1 Input File                                 
+%                        Date: 3/10/2021                                  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MCVT - version 1: Integrated Simulation
+% MCVT Systems: Structural, Power, ECLSS, Interior Env., Exterion Env.
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                             Output File Name                           
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+Output_Folder = ['MCVT_run1_' date]; %set output file name
+mkdir(Output_Folder);
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                             MCVT SCENARIOS                             
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Note: Here Sspecify Input Parameters for MCVT scenarios.
+tic
+% Add Folder to Search Path
+addpath(genpath(pwd)); 
+
+% Total Simulation time
+T_end  = 60;                                         % time in s;
+
+% Meteoroite impact input
+meteorite_impact_time=10;                            % time in s;
+meteorite_impact_location_xyz=[2.4779    1.0628    1.067];% meteoroite impact location x,y,z coordinates, the available options are: 
+                                                         %  No.1:  1.0631    2.4778    1.0679 
+                                                         %  No.2:  2.4779    1.0628    1.0679
+                                                         %  No.3:  1.0622    1.0619    2.4807
+                                                         %  No.4: -1.0679    2.4778    1.0631
+                                                         %  No.5: -1.0679    1.0628    2.4779
+                                                         %  No.6: -2.4807    1.0619    1.0622
+                                                         %  No.7: -1.0631    2.4778   -1.0679
+                                                         %  No.8: -2.4779    1.0628   -1.0679
+                                                         %  No.9: -1.0622    1.0619   -2.4807
+                                                         %  No.10: 1.0679    2.4778   -1.0631
+                                                         %  No.11: 1.0679    1.0628   -2.4779
+                                                         %  No.12: 2.4808    1.0619   -1.0622 
+
+% Dust accumulation input
+launch_site_dust_distance = [100, 150, 200];         % distance between launch/landing site and the habitat system for nuclear power, solver PV, and ECLSS radiator panels in m;
+norminal_dust_accum_rate=[0.1, 0.3, 0.2];            % norminal dust accumualtion rate without events in 
+met_dust_accum_rate=[10, 10, 10];                    % typical dust accumualtion rate with meteoroite event
+launch_dust_accum_start_time =12;                    % dust accumulation due to lanch/landing events start time in s;
+launch_dust_accum_stop_time = 18;                    % dust accumulation due to lanch/landing events stop time in s;
+dust_met_duration = 10;                               % dust accumulation due to meteoroid impact duration time in s;
+
+% Solar radiation start angle
+Start_angle=45;                                      %Provide the start angle of solar radiation, select among 0,45,90, and 135 
+
+% Structural system cases
+damage_case_id = 4;                                  % can be selected between 1 and 4
+                                                         % 1: (minor) damage in the protective layer
+                                                         % 2: major damage in the protective layer
+                                                         % 3: damage in protective layer & structure
+                                                         % 4: damage in protective layer & structure.& with pressure leakage
+
+% Power distribution parameters
+nuclear_power_toggle = 1;                            % setting to 1 to enable and 0 to disable nuclear power supply
+solar_power_toggle = 1;                              % setting to 1 to enable and 0 to disable solar power supply
+battery_power_toggle = 1;                            % setting to 1 to enable and 0 to disable battery energy
+energy_store_max_o = 150;                            % maximum amount of energy that can be stored, in kWh
+energy_store_min_o = 0;                              % minimum amount of energy that can be stored, in kWh
+
+% Interior environment
+initial_temperature = 293.15;                           % initial temperature in the interior envrionment, in K.
+initial_pressure= 1e5;                               % initial pressure in the interior envrionment, in Pa.
+ref_temperature= 253.15;                             % Reference Temperature for Heat Transfer through leak, in K.
+
+% ECLSS parameters
+AirStorageTank_volume=1/1000;                        % air storage tank limit for pressure control in (1e3 liters).
+Heat_capacity=20;                                    % heating capacity, in kW  
+temperature_set_point=298.15;                        % Indoor temperature setpoint, in K
+pressure_set_point=1.01325e5;                        % Indoor pressure setpoint, in pa  
+
+% Agent model
+Exp_RepairTime_NPG = 4;                              % Exp. repair time for nuclear power system (to remove dust), in s
+Exp_RepairRate_NPG = 10;                             % Exp. repair rate for nuclear power system (to remove dust), in mg/cm^2-s
+Exp_RepairTime_SPG = 20;                              % Exp. repair time for solar power system (to remove dust), in s
+Exp_RepairRate_SPG = 10;                            % Exp. repair rate for solar power system (to remove dust), in mg/cm^2-s
+Exp_RepairTime_Structure = 5;                        % repair time for structural system (to repair damage), in s 
+Exp_RepairRate_Structure = 6e-5;                     % Exp. repair rate for structure system (to repair damage), in m^3/0.001-s
+Exp_RepairTime_ECLSS_Dust  = 10/3600;                % ECLSS dust clean time, in hours, note interface in agent is not established
+Exp_RepairTime_ECLSS_Paint = 10/3600;                % ECLSS paint damage repair time, in hours, note interface in agent is not estalibhsed
+
+RepairNPG_Activity_Active=1;                         % setting to 1 to enable and 0 to disable the activity of nuclear panel cleaning
+RepairSPG_Activity_Active=1;                         % setting to 1 to enable and 0 to disable the activity of solar panel cleaning
+RepairStruct_Activity_Active=1;                      % setting to 1 to enable and 0 to disable the activity of structural panel repair
+RepairNPG_Action_Active=1;                           % setting to 1 to enable and 0 to disable the effectiveness of nuclear panel cleaning
+RepairSPG_Action_Active=1;                           % setting to 1 to enable and 0 to disable the effectiveness of solar panel cleaning
+RepairStruct_Action_Active=1;                        % setting to 1 to enable and 0 to disable the effectiveness of structural panel repair
+
+%% Subsystem 2.2 STM and Power Model
+SpaceTemp=4;          %Cosmic Background Temperature, K%
+
+                
+elapsedTime(1) = toc;
+disp(['-[1/5] Input File Loaded (' num2str(elapsedTime(1)) ' sec)']);
+
+
+
+
